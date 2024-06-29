@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<head>
+<title>Curriculo</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #f0f0f0; 
+        color: #333; 
+        transition: background-color 0.3s ease, color 0.3s ease; /* Transição suave de cores */
+    }
+
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        background-color: #fff; 
+    }
+
+    .experience-inputs {
+        margin-bottom: 10px;
+        text-align: center;
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        background-color: #f9f9f9; 
+    }
+
+    .experience-inputs h3 {
+        margin-top: 0;
+    }
+
+    .experience-inputs label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .btn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .btn-secondary {
+        background-color: #ccc;
+    }
+
+    .btn-delete {
+        background-color: #f44336;
+    }
+
+    /* Estilos para o modo escuro */
+    body.dark-mode {
+        background-color: #333;
+        color: #fff;
+    }
+
+    .container.dark-mode {
+        background-color: #222;
+        border-color: #444;
+        color: #fff;
+    }
+
+    .experience-inputs.dark-mode {
+        background-color: #444;
+        border-color: #666;
+        color: #fff;
+    }
+
+    @media print {
+        .no-print {
+            display: none;
+        }
+        body {
+            background-color: #fff;
+            color: #000;
+        }
+        .container {
+            background-color: #fff;
+            color: #000;
+        }
+        .experience-inputs {
+            background-color: #f9f9f9;
+            color: #000;
+        }
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h2>Dados Pessoais</h2>
+        <label>Nome:</label>
+        <input type="text" id="nome">
+        <br><br>
+        <label>Data de Nascimento:</label>
+        <input type="date" id="dataNascimento" onchange="calcularIdade()">
+        <br><br>
+        <label>Idade:</label>
+        <label id="idade"></label>
+        <br><br>
+        <h2>Experiências Profissionais</h2>
+        <form id="experience-form">
+            <div id="experience-container">
+            </div>
+            <button type="button" onclick="addExperience()" class="no-print">+ Adicionar Experiência</button>
+            <br><br>
+            <button type="button" onclick="printResume()" class="no-print">Imprimir Currículo</button>
+            <button type="button" onclick="toggleDarkMode()" class="btn btn-secondary no-print">Modo Escuro</button>
+        </form>
+    </div>
+
+    <script>
+        let experienceCount = 0;
+
+        function addExperience() {
+            experienceCount++;
+            const container = document.getElementById('experience-container');
+
+            const newExperience = document.createElement('div');
+            newExperience.className = 'experience-inputs';
+            newExperience.innerHTML = `
+                <h3>Experiência ${experienceCount}</h3>
+                <label for="descricao-${experienceCount}">Descrição:</label>
+                <input type="text" id="descricao-${experienceCount}" name="descricao-${experienceCount}" required>
+                <button type="button" onclick="deleteExperience(${experienceCount})" class="btn btn-delete no-print">Excluir</button>
+            `;
+
+            if (document.body.classList.contains('dark-mode')) {
+                newExperience.classList.add('dark-mode');
+            }
+
+            container.appendChild(newExperience);
+        };
+
+        function deleteExperience(id) {
+            experienceCount--;
+            const experience = document.getElementById(`descricao-${id}`).parentNode;
+            experience.remove();
+        }
+
+        function calcularIdade() {
+            const dataNascimento = document.getElementById('dataNascimento').value;
+            const hoje = new Date();
+            const nascimento = new Date(dataNascimento);
+            let idade = hoje.getFullYear() - nascimento.getFullYear();
+            const mes = hoje.getMonth() - nascimento.getMonth();
+
+            if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+                idade--;
+            }
+
+            document.getElementById('idade').textContent = `${idade} anos`;
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            document.querySelector('.container').classList.toggle('dark-mode');
+            document.querySelectorAll('.experience-inputs').forEach(item => {
+                item.classList.toggle('dark-mode');
+            });
+        }
+
+        function printResume() {
+            const darkModeEnabled = document.body.classList.contains('dark-mode');
+            if (darkModeEnabled) {
+                toggleDarkMode();
+            }
+
+            window.print();
+
+            if (darkModeEnabled) {
+                toggleDarkMode();
+            }
+        }
+    </script>
+
+</body>
+</html>
